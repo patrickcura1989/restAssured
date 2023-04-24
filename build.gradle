@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id("com.diffplug.gradle.spotless") version "4.5.1"
 }
 
 group 'org.example'
@@ -7,6 +8,21 @@ version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+}
+
+spotless {
+    java {
+        target fileTree('.') {
+            include '**/*.java'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        googleJavaFormat('1.3') // google format also have line length, need to override that
+        importOrder 'java', 'javax', 'com', 'org'
+        custom 'Lambda fix', { it.replace('} )', '})').replace('} ,', '},') }
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 }
 
 dependencies {
